@@ -81,7 +81,12 @@ public class HttpConnection {
 
     while (retries++ < maxRetries) {
       try {
-        final URL request = new URL(new URL(endpoint), url);
+        URL request = new URL(endpoint);
+        // Check if the endpoint contains only host or host:port (no path, query, or fragment)
+        if (request.getPath().isEmpty() && request.getQuery() == null && request.getRef() == null) {
+          // Append the `url` to `endpoint`
+          request = new URL(new URL(endpoint), url);
+        }
         LOG.debug("opening connection for: {}", request);
 
         if (isBasicProxyConfigured()) {
